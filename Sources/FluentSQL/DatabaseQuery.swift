@@ -43,13 +43,13 @@ extension DatabaseQuery where Database.QueryFilter: DataPredicateComparisonConve
         case .create, .update, .delete:
             let statement: DataManipulationStatement
             switch action {
-            case .create: statment = .insert
-            case .update: statment = .update
-            case .delete: statment = .delete
+            case .create: statement = .insert
+            case .update: statement = .update
+            case .delete: statement = .delete
             case .read: fatalError("Unsupported action: \(action).")
             }
             let query = DataManipulationQuery(
-                statement: statment,
+                statement: statement,
                 table: entity,
                 columns: [],
                 joins: joins,
