@@ -51,7 +51,7 @@ public final class RevertCommand: Command, Service {
                     return migration.migrationRevertAll(on: context.container)
                 }
             }.syncFlatten(on: context.container).map(to: Void.self) {
-                logger.info("Succesfully reverted all migrations")
+                logger.info("Successfully reverted all migrations")
             }
         } else {
             logger.info("Revert last batch of migrations requested")
@@ -66,7 +66,7 @@ public final class RevertCommand: Command, Service {
                     return migration.migrationRevertBatch(on: context.container)
                 }
             }.syncFlatten(on: context.container).map(to: Void.self) {
-                logger.info("Succesfully reverted last batch of migrations")
+                logger.info("Successfully reverted last batch of migrations")
             }
         }
     }

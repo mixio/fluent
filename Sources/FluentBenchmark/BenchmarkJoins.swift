@@ -51,5 +51,3 @@ extension Benchmarker where Database: SchemaSupporting & JoinSupporting & Refere
         self.pool.releaseConnection(conn)
     }
 }
-
-

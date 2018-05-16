@@ -23,7 +23,7 @@ public enum BindValueMethod {
 /// Prepend, append, or fully enclose
 /// the bind in a wildcard.
 public enum BindWildcard {
-    case leadingWildcard // %s
-    case trailingWildcard // s%
-    case fullWildcard // %s%
+    case leadingWildcard    // %s
+    case trailingWildcard   // s%
+    case fullWildcard       // %s%
 }

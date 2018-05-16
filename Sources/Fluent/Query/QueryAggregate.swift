@@ -10,10 +10,10 @@ import Async
 ///
 /// They can also be used to generate sums or averages for all values in a column.
 public struct QueryAggregate {
-    /// Optional field to apply this aggreagate to. If `nil`, the aggregate is applied to all fields.
+    /// Optional field to apply this aggregate to. If `nil`, the aggregate is applied to all fields.
     public var field: QueryField?
 
-    /// The specific aggreatge method to use.
+    /// The specific aggregate method to use.
     public var method: QueryAggregateMethod
 }
 
@@ -70,7 +70,7 @@ extension QueryBuilder {
     {
         query.action = .read
         query.aggregates.append(aggregate)
-        
+
         var result: D? = nil
 
         return decode(AggregateResult<D>.self).run() { row in
@@ -84,7 +84,8 @@ extension QueryBuilder {
     }
 }
 
-/// Aggreagate result structure expected from DB.
+/// Aggregate result structure expected from DB.
 internal struct AggregateResult<D: Decodable>: Decodable {
     var fluentAggregate: D
 }
+

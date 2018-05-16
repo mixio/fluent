@@ -19,27 +19,30 @@ extension Benchmarker where Database: QuerySupporting, Database.QueryFilter: Dat
         if tas != 2 {
             fail("tas == \(tas)")
         }
+
         let ers = try test(User<Database>.query(on: conn).filter(\.name ~= "er").count())
         if ers != 2 {
-            fail("ers == \(tas)")
+            fail("ers == \(ers)")
         }
+
         let annes = try test(User<Database>.query(on: conn).filter(\.name ~~ "anne").count())
         if annes != 1 {
-            fail("annes == \(tas)")
+            fail("annes == \(annes)")
         }
+
         let ns = try test(User<Database>.query(on: conn).filter(\.name ~~ "n").count())
         if ns != 3 {
-            fail("ns == \(tas)")
+            fail("ns == \(ns)")
         }
 
         let nertan = try test(User<Database>.query(on: conn).filter(\.name ~~ ["ner", "tan"]).count())
         if nertan != 2 {
-            fail("nertan == \(tas)")
+            fail("nertan == \(nertan)")
         }
 
         let notner = try test(User<Database>.query(on: conn).filter(\.name !~ ["ner"]).count())
         if notner != 2 {
-            fail("nertan == \(tas)")
+            fail("notner == \(notner)")
         }
     }
 

@@ -41,7 +41,7 @@ extension DatabaseQuery where Database.QueryFilter: DataPredicateComparisonConve
             )
             return (.query(query), encodables)
         case .create, .update, .delete:
-            let statment: DataManipulationStatement
+            let statement: DataManipulationStatement
             switch action {
             case .create: statment = .insert
             case .update: statment = .update

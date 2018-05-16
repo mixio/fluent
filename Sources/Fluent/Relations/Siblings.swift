@@ -20,7 +20,7 @@ import Async
 ///     }
 ///
 /// The third generic parameter to this relation is a Pivot.
-/// Althrough not enforced by compiler (due to the handedness), the Through pivot _must_
+/// Although not enforced by compiler (due to the handedness), the Through pivot _must_
 /// have Left & Right model types equal to the siblings From & To models.
 /// (This cannot be enforced by the compiler due to the handedness)
 ///
@@ -121,7 +121,7 @@ extension Siblings where Base.Database: QuerySupporting {
     ///
     ///     cat.toys.detachAll(on: ...)
     ///
-    /// See `detach(on:)` to remove a single related models.
+    /// See `detach(on:)` to remove a single related model.
     /// See the `pivots(on:)` method to create a `QueryBuilder` on the pivots for more functionality.
     public func detachAll(on conn: DatabaseConnectable) -> Future<Void> {
         return Future.flatMap(on: conn) {

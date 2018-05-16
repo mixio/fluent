@@ -1,5 +1,5 @@
 /// A reference / foreign key is a field (or collection of fields) in one table
-/// that uniquely identifies a row of another table or the same table.
+/// that uniquely identifies a row of another table or of the same table.
 public struct SchemaReference<Database> where Database: ReferenceSupporting & SchemaSupporting {
     /// The base field.
     public let base: QueryField

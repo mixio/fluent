@@ -6,7 +6,7 @@ public final class QueryBuilder<Model, Result> where Model: Fluent.Model, Model.
     /// The query being built.
     public var query: DatabaseQuery<Model.Database>
 
-    /// The connection this query will be excuted on.
+    /// The connection this query will be executed on.
     /// note: don't call execute manually or fluent's
     /// hooks will not run properly.
     public let connection: Future<Model.Database.Connection>
@@ -25,7 +25,7 @@ public final class QueryBuilder<Model, Result> where Model: Fluent.Model, Model.
         self.resultTransformer = resultTransformer
     }
 
-    /// Runs the `QueryBuilder's query, decoding results of the supplied type into the handler.
+    /// Runs the `QueryBuilder`'s query, decoding results of the supplied type into the handler.
     public func run(into handler: @escaping (Result) throws -> () = { _ in }) -> Future<Void> {
         /// if the model is soft deletable, and soft deleted
         /// models were not requested, then exclude them
@@ -33,10 +33,7 @@ public final class QueryBuilder<Model, Result> where Model: Fluent.Model, Model.
         case .create: break // no soft delete filters needed for create
         case .read, .update, .delete:
             do {
-                if
-                    let type = Model.self as? AnySoftDeletable.Type,
-                    !query.withSoftDeleted
-                {
+                if let type = Model.self as? AnySoftDeletable.Type, !query.withSoftDeleted {
                     try group(.or) { or in
                         try or.filter(type.deletedAtField(), .equals, .data(Date?.none))
                         try or.filter(type.deletedAtField(), .greaterThan, .data(Date()))

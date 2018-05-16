@@ -26,7 +26,6 @@ extension DatabaseSchema {
     }
 }
 
-
 extension DatabaseSchema where Database: ReferenceSupporting {
     /// Converts a database schema to sql schema query
     public func applyReferences(to schemaQuery: inout DataDefinitionQuery) {

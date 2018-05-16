@@ -9,7 +9,7 @@ extension Benchmarker where Database: QuerySupporting {
         // create
         let a = Foo<Database>(bar: "asdf", baz: 42)
         let b = Foo<Database>(bar: "asdf", baz: 42)
-        
+
         _ = try test(a.save(on: conn))
         _ = try test(b.save(on: conn))
         var count = try test(conn.query(Foo<Database>.self).count())

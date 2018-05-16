@@ -76,7 +76,7 @@ extension QueryBuilder where Model: SoftDeletable {
 }
 
 /// Unfortunately we need this hack until we have existentials.
-/// note: do not rely on this exterally.
+/// note: do not rely on this externally.
 public protocol AnySoftDeletable: AnyModel {
     /// Pointer to type erased key string
     static func deletedAtField() throws -> QueryField

@@ -45,7 +45,7 @@ struct Bar<D>: Model, SoftDeletable, Timestampable where D: QuerySupporting {
     /// See `SoftDeletable.deletedAt`
     var deletedAt: Date?
 
-    /// Create a new foo
+    /// Create a new Bar
     init(id: ID? = nil, baz: Int) {
         self.id = id
         self.baz = baz

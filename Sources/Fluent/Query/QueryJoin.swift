@@ -67,8 +67,8 @@ extension QueryBuilder where Model.Database: JoinSupporting {
     /// Join another model to this query builder.
     public func join<Joined>(
         _ joinedType: Joined.Type = Joined.self,
-        field joinedKey: KeyPath<Joined, Model.ID>,
-        to baseKey: KeyPath<Model, Model.ID?> = Model.idKey,
+        field joinedKey: KeyPath<Joined, Model.ID>,             // Model.ID
+        to baseKey: KeyPath<Model, Model.ID?> = Model.idKey,    // Optional Model.ID
         method: QueryJoinMethod = .inner
     ) throws -> Self where Joined: Fluent.Model {
         let join = try QueryJoin(
@@ -83,8 +83,8 @@ extension QueryBuilder where Model.Database: JoinSupporting {
     /// Join another model to this query builder.
     public func join<Joined>(
         _ joinedType: Joined.Type = Joined.self,
-        field joinedKey: KeyPath<Joined, Model.ID?>,
-        to baseKey: KeyPath<Model, Model.ID?> = Model.idKey,
+        field joinedKey: KeyPath<Joined, Model.ID?>,            // Optional Model.ID
+        to baseKey: KeyPath<Model, Model.ID?> = Model.idKey,    // Optional Model.ID
         method: QueryJoinMethod = .inner
     ) throws -> Self where Joined: Fluent.Model {
         let join = try QueryJoin(
@@ -99,8 +99,8 @@ extension QueryBuilder where Model.Database: JoinSupporting {
     /// Join another model to this query builder.
     public func join<Joined>(
         _ joinedType: Joined.Type = Joined.self,
-        field joinedKey: KeyPath<Joined, Model.ID?>,
-        to baseKey: KeyPath<Model, Model.ID>,
+        field joinedKey: KeyPath<Joined, Model.ID?>,            // Optional Model.ID
+        to baseKey: KeyPath<Model, Model.ID>,                   // Model.ID
         method: QueryJoinMethod = .inner
     ) throws -> Self where Joined: Fluent.Model {
         let join = try QueryJoin(
@@ -115,8 +115,8 @@ extension QueryBuilder where Model.Database: JoinSupporting {
     /// Join another model to this query builder.
     public func join<Joined>(
         _ joinedType: Joined.Type = Joined.self,
-        field joinedKey: KeyPath<Joined, Model.ID>,
-        to baseKey: KeyPath<Model, Model.ID>,
+        field joinedKey: KeyPath<Joined, Model.ID>,             // Model.ID
+        to baseKey: KeyPath<Model, Model.ID>,                   // Model.ID
         method: QueryJoinMethod = .inner
     ) throws -> Self where Joined: Fluent.Model {
         let join = try QueryJoin(

@@ -68,7 +68,7 @@ public struct MigrationConfig: Service {
     /// Note: This method is for databases that conform to `SchemaSupporting`.
     ///
     /// - parameters:
-    ///     - model: `Model & Migration` type to add.
+    ///     - model: `Model & Migration` type to add.
     ///     - database: Database identifier for the database this should run on.
     ///     - name: Optional unique name for this migration. This will be stored in Fluent's metadata table to detect whether
     ///             the migration has already run or not.
@@ -94,7 +94,7 @@ public struct MigrationConfig: Service {
     /// Note: This method is for databases that do not conform to `SchemaSupporting`.
     ///
     /// - parameters:
-    ///     - model: `Model & Migration` type to add.
+    ///     - model: `Model & Migration` type to add.
     ///     - database: Database identifier for the database this should run on.
     ///     - name: Optional unique name for this migration. This will be stored in Fluent's metadata table to detect whether
     ///             the migration has already run or not.

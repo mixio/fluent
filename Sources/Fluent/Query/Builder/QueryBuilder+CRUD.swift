@@ -70,7 +70,7 @@ extension QueryBuilder {
         self.query.action = .update
         return self.run()
     }
-    
+
     /// Updates the model. This requires that the model has its ID set.
     public func update(_ model: Model, originalID: Model.ID? = nil) -> Future<Model> {
         // set timestamps
@@ -109,7 +109,7 @@ extension QueryBuilder {
         }
     }
 
-    /// Deletes the supplied model. Throws an error if the mdoel did not have an id.
+    /// Deletes the supplied model. Throws an error if the model did not have an id.
     internal func delete(_ model: Model) -> Future<Void> {
         // set timestamps
         if var softDeletable = model as? AnySoftDeletable {
@@ -120,7 +120,7 @@ extension QueryBuilder {
         }
     }
 
-    /// Deletes the supplied model. Throws an error if the mdoel did not have an id.
+    /// Deletes the supplied model. Throws an error if the model did not have an id.
     /// note: does NOT respect soft deletable.
     internal func _delete(_ model: Model) -> Future<Void> {
         return connection.flatMap(to: Void.self) { conn in
@@ -136,7 +136,7 @@ extension QueryBuilder {
             try self.filter(Model.idKey, .equals, .data(id))
             self.query.action = .delete
 
-            return Model.Database.modelEvent(event: .willDelete, model: model,on: conn).flatMap(to: Model.self) { model in
+            return Model.Database.modelEvent(event: .willDelete, model: model, on: conn).flatMap(to: Model.self) { model in
                 return try model.willDelete(on: conn)
             }.flatMap(to: Void.self) { model in
                 return self.run()

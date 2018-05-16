@@ -2,7 +2,7 @@ import Async
 import Foundation
 import Service
 
-/// Represents a migration that has succesfully ran.
+/// Represents a migration that has successfully ran.
 final class MigrationLog<D>: Model, Timestampable where D: QuerySupporting {
     /// See Model.Database
     typealias Database = D

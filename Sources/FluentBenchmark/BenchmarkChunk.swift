@@ -10,7 +10,6 @@ extension Benchmarker where Database: QuerySupporting {
         var fetched64: [User<Database>] = []
         var fetched2047: [User<Database>] = []
 
-        
         for i in 1...512 {
             let user = User<Database>(name: "User \(i)", age: i)
             _ = try test(user.save(on: conn))
@@ -18,7 +17,7 @@ extension Benchmarker where Database: QuerySupporting {
 
         try test(conn.query(User<Database>.self).chunk(max: 64) { chunk in
             if chunk.count == 0 {
-                print("[warning] zero length chunk. there is probably an extraneous close happening")
+                print("[warning] zero length chunk. There is probably an extraneous close happening")
                 return
             }
             if chunk.count != 64 {
@@ -27,17 +26,16 @@ extension Benchmarker where Database: QuerySupporting {
             fetched64 += chunk
         })
 
-
         if fetched64.count != 512 {
             self.fail("did not fetch all - only \(fetched64.count) out of 512")
         }
 
         _ = try test(conn.query(User<Database>.self).chunk(max: 511) { chunk in
             if chunk.count == 0 {
-                print("[warning] zero length chunk. there is probably an extraneous close happening")
+                print("[warning] zero length chunk. There is probably an extraneous close happening")
                 return
             }
-            
+
             if chunk.count != 511 && chunk.count != 1 {
                 self.fail("bad chunk count")
             }

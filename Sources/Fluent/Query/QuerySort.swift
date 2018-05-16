@@ -7,10 +7,7 @@ public struct QuerySort {
     public let direction: QuerySortDirection
 
     /// Create a new sort
-    public init(
-        field: QueryField,
-        direction: QuerySortDirection
-    ) {
+    public init(field: QueryField, direction: QuerySortDirection) {
         self.field = field
         self.direction = direction
     }
@@ -34,7 +31,7 @@ extension QueryBuilder {
         )
         return self.sort(sort)
     }
-    
+
     /// Add a Sort to the Query.
     public func sort(_ sort: QuerySort) -> Self {
         query.sorts.append(sort)

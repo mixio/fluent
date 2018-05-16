@@ -76,7 +76,7 @@ final class BasicUser<D>:  Model where D: QuerySupporting {
 
     static var entity: String { return "b_users" }
 
-    /// Foo's identifier
+    /// `BasicUser`'s identifier
     var id: Int?
 
     /// Name string

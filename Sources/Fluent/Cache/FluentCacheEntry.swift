@@ -29,7 +29,6 @@ public final class FluentCacheEntry<D>: Model
 
 extension FluentCacheEntry: Migration where D: SchemaSupporting { }
 
-
 extension MigrationConfig {
     /// Prepares the supplied `SchemaSupporting` database for `FluentCache` use.
     public mutating func prepareCache<D>(for database: DatabaseIdentifier<D>)

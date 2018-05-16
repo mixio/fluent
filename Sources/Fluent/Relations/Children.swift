@@ -10,7 +10,7 @@ public struct Children<Parent, Child>
     /// Reference to the parent's ID
     public var parent: Parent
 
-    /// Reference to the foreign key on t(he child.
+    /// Reference to the foreign key on the child.
     fileprivate var foreignParentField: () throws -> QueryField
 
     /// Creates a new children relationship.

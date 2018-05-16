@@ -13,7 +13,6 @@ extension Benchmarker where Database: JoinSupporting & ReferenceSupporting & Que
         var ziz = try Pet<Database>(name: "Ziz", ownerID: tanner.requireID())
         ziz = try test(ziz.save(on: conn))
 
-
         var count = try test(tanner.pets.query(on: conn).count())
         if count != 1 {
             self.fail("invalid count \(count) != 1")
@@ -89,5 +88,3 @@ extension Benchmarker where Database: SchemaSupporting & JoinSupporting & Refere
         self.pool.releaseConnection(conn)
     }
 }
-
-

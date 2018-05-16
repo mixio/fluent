@@ -3,7 +3,7 @@
 public struct QueryField: Hashable {
     /// See `Hashable.hashValue`
     public var hashValue: Int {
-        return (entity ?? "<nil>" + "." + name).hashValue
+        return ((entity ?? "<nil>") + "." + name).hashValue
     }
 
     /// See `Equatable.==`
@@ -140,7 +140,7 @@ extension Model {
 public struct QueryFieldDecodingContainer<Model> where Model: Fluent.Model {
     /// The underlying container.
     public var container: KeyedDecodingContainer<QueryField>
-    
+
     /// Decodes a model key path to a type.
     public func decode<T: Decodable>(key: KeyPath<Model, T>) throws -> T {
         let field = try key.makeQueryField()

@@ -6,7 +6,7 @@ import Service
 /// from a database connection using a query.
 ///
 /// Types conforming to this protocol provide the basis
-/// fetching and saving data to/from Fluent.
+/// for fetching and saving data to/from Fluent.
 public protocol Model: AnyModel, Reflectable {
     /// The type of database this model can be queried on.
     associatedtype Database: Fluent.Database
@@ -26,7 +26,7 @@ public protocol Model: AnyModel, Reflectable {
 
     /// Called before a model is created when saving.
     /// Throwing will cancel the save.
-    func willCreate(on connection: Database.Connection)  throws -> Future<Self>
+    func willCreate(on connection: Database.Connection) throws -> Future<Self>
     /// Called after the model is created when saving.
     func didCreate(on connection: Database.Connection) throws -> Future<Self>
 
@@ -93,31 +93,32 @@ extension Model {
         return pluralName
     }
 
-    /// Seee Model.willCreate()
+    /// See `Model.willCreate()`
     public func willCreate(on connection: Database.Connection) throws -> Future<Self> {
         return Future.map(on: connection) { self }
     }
 
-    /// See Model.didCreate()
+    /// See `Model.didCreate()`
     public func didCreate(on connection: Database.Connection) throws -> Future<Self> {
         return Future.map(on: connection) { self }
     }
 
-    /// See Model.willUpdate()
+    /// See `Model.willUpdate()`
     public func willUpdate(on connection: Database.Connection) throws -> Future<Self> {
         return Future.map(on: connection) { self }
     }
-    /// See Model.didUpdate()
+
+    /// See `Model.didUpdate()`
     public func didUpdate(on connection: Database.Connection) throws -> Future<Self> {
         return Future.map(on: connection) { self }
     }
 
-    /// See Model.willRead()
+    /// See `Model.willRead()`
     public func willRead(on connection: Database.Connection) throws -> Future<Self> {
         return Future.map(on: connection) { self }
     }
 
-    /// See Model.willDelete()
+    /// See `Model.willDelete()`
     public func willDelete(on connection: Database.Connection) throws -> Future<Self> {
         return Future.map(on: connection) { self }
     }

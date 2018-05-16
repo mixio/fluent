@@ -15,12 +15,12 @@ public struct ReferentialActions {
     /// The default `ReferentialActions`
     public static let `default`: ReferentialActions = .init(update: nil, delete: nil)
 
-    /// The default `ReferentialActions`
+    /// The prevent `ReferentialActions`
     public static let prevent: ReferentialActions = .init(update: .prevent, delete: .prevent)
 
-    /// The default `ReferentialActions`
+    /// The nullify `ReferentialActions`
     public static let nullify: ReferentialActions = .init(update: .nullify, delete: .nullify)
 
-    /// The default `ReferentialActions`
+    /// The update `ReferentialActions`
     public static let update: ReferentialActions = .init(update: .update, delete: .update)
 }

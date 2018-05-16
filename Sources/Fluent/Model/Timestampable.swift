@@ -32,7 +32,7 @@ extension Timestampable {
 }
 
 /// Unfortunately we need this hack until we have existentials.
-/// note: do not rely on this exterally.
+/// note: do not rely on this externally.
 public protocol AnyTimestampable: AnyModel {
     /// Access the created at property.
     var fluentCreatedAt: Date? { get set }

@@ -3,7 +3,7 @@ public struct QueryRange {
     /// The lower bound of item indexes to return. This should be `0` by default.
     public var lower: Int
 
-    /// The upper bound of item indexes to return. If this is `nil`, the range acts as just on offset.
+    /// The upper bound of item indexes to return. If this is `nil`, the range acts as just an offset.
     /// If it is set, the number of results will have a max possible value (upper - lower).
     public var upper: Int?
 
