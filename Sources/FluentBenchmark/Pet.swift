@@ -22,13 +22,13 @@ public final class Pet<D>: Model where D: QuerySupporting {
         return .init("test")
     }
 
-    /// Foo's identifier
+    /// Pet's identifier
     var id: ID?
 
-    /// Name string
+    /// Pet's name
     var name: String
 
-    /// Age int
+    /// Pet's owner ID
     var ownerID: User<Database>.ID?
 
     /// Creates a new `Pet`
@@ -37,7 +37,7 @@ public final class Pet<D>: Model where D: QuerySupporting {
         self.name = name
         self.ownerID = ownerID
     }
-    
+
     /// See Encodable.encode
     public func encode(to encoder: Encoder) throws {
         var container = encodingContainer(for: encoder)

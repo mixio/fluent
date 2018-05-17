@@ -28,13 +28,13 @@ public final class User<D>: Model, Timestampable where D: QuerySupporting {
         return .init("test")
     }
 
-    /// Foo's identifier
+    /// User's identifier
     var id: UUID?
 
-    /// Name string
+    /// User's name
     var name: String
 
-    /// Age int
+    /// User's age
     var age: Int
 
     /// Timestampable.createdAt
@@ -43,7 +43,7 @@ public final class User<D>: Model, Timestampable where D: QuerySupporting {
     /// Timestampable.updatedAt
     public var updatedAt: Date?
 
-    /// Create a new foo
+    /// Create a new User
     init(id: ID? = nil, name: String, age: Int) {
         self.id = id
         self.name = name

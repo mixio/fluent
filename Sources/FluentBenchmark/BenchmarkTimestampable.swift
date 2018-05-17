@@ -24,7 +24,7 @@ extension Benchmarker where Database: QuerySupporting {
         Thread.sleep(forTimeInterval: 0.05)
         bar = try test(bar.save(on: conn))
         if bar.updatedAt! <= originalUpdatedAt {
-            fail("new updated at should be greater")
+            fail("new updatedAt should be greater")
         }
 
         let f = try test(conn.query(Bar<Database>.self).filter(\.baz == 1).first())

@@ -7,7 +7,7 @@ public struct FluentBenchmarkError: Debuggable {
     public var reason: String
     public var sourceLocation: SourceLocation?
     public var stackTrace: [String]
-    
+
     init(
         identifier: String,
         reason: String,

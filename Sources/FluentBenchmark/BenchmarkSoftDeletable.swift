@@ -75,5 +75,3 @@ extension Benchmarker where Database: QuerySupporting & TransactionSupporting & 
         pool.releaseConnection(conn)
     }
 }
-
-

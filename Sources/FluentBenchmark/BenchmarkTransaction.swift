@@ -18,11 +18,9 @@ extension Benchmarker where Database: QuerySupporting & TransactionSupporting {
                         if count != 2 {
                             self.fail("count \(count) != 2")
                         }
-
                         throw FluentBenchmarkError(identifier: "test", reason: "rollback", source: .capture())
                     }
                 }
-
             }.wait()
         } catch is FluentBenchmarkError {
             // expected

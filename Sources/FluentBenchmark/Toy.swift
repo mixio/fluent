@@ -22,13 +22,13 @@ public struct Toy<D>: Model where D: QuerySupporting {
         return .init("test")
     }
 
-    /// Foo's identifier
+    /// Toy's identifier
     var id: ID?
 
-    /// Name string
+    /// Toy's name
     var name: String
 
-    /// Create a new foo
+    /// Create a new Toy
     init(id: ID? = nil, name: String) {
         self.id = id
         self.name = name
