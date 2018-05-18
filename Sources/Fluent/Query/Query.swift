@@ -1,155 +1,157 @@
-/// A query that can be sent to a Fluent database.
-public struct Query<Database> where Database: QuerySupporting {
-    /// CRUD operations that can be performed on the database.
-    public enum Action {
-        /// Saves new data to the database.
-        case create
-        /// Reads existing data from the database.
-        case read
-        /// Updates existing data from the database.
-        case update
-        /// Deletes existing data from the database.
-        case delete
+public protocol Query {
+    associatedtype Action: QueryAction
+    associatedtype Field: QueryField
+    associatedtype Filter: QueryFilter
+        where Filter.Field == Field
+    associatedtype Data: QueryData
+    associatedtype Key: QueryKey
+        where Key.Field == Field
+    associatedtype Range: QueryRange
+    associatedtype Sort: QuerySort
+
+    static func fluentQuery(_ entity: String) -> Self
+
+    static var fluentActionKey: WritableKeyPath<Self, Action> { get }
+    static var fluentBindsKey: WritableKeyPath<Self, [Data]> { get }
+    static var fluentDataKey: WritableKeyPath<Self, [Field: Data]> { get }
+    static var fluentFiltersKey: WritableKeyPath<Self, [Filter]> { get }
+    static var fluentKeysKey: WritableKeyPath<Self, [Key]> { get }
+    static var fluentRangeKey: WritableKeyPath<Self, Range?> { get }
+    static var fluentSortsKey: WritableKeyPath<Self, [Sort]> { get }
+}
+
+extension Query {
+    // MARK: Internal
+
+    internal var fluentAction: Action {
+        get { return self[keyPath: Self.fluentActionKey] }
+        set { self[keyPath: Self.fluentActionKey] = newValue }
     }
-    
-    public enum Field {
-        case field(FieldKeyPath)
-        case reflected(ReflectedProperty, entity: String)
-        case custom(Database.FieldType)
-
-        public static func keyPath<R,V>(_ keyPath: KeyPath<R, V>) -> Field {
-            return .field(FieldKeyPath(rootType: R.self, valueType: V.self, keyPath: keyPath))
-        }
+    internal var fluentBinds: [Data] {
+        get { return self[keyPath: Self.fluentBindsKey] }
+        set { self[keyPath: Self.fluentBindsKey] = newValue }
     }
-
-    public struct FieldKeyPath {
-        public var rootType: Any.Type
-        public var valueType: Any.Type
-        public var keyPath: AnyKeyPath
+    internal var fluentData: [Field: Data] {
+        get { return self[keyPath: Self.fluentDataKey] }
+        set { self[keyPath: Self.fluentDataKey] = newValue }
     }
-
-    public enum Entity {
-        case encodable(Encodable)
-        case batch([(Field, Value)])
-        case custom(Database.EntityType)
-        case none
-        public static func single(_ field: Field, _ value: Value) -> Entity {
-            return .batch([(field, value)])
-        }
+    internal var fluentFilters: [Filter] {
+        get { return self[keyPath: Self.fluentFiltersKey] }
+        set { self[keyPath: Self.fluentFiltersKey] = newValue }
     }
-    
-    public enum Value {
-        case field(FieldKeyPath)
-        case data(Data)
-        case custom(Database.FilterValueType)
-        public static func keyPath<R,V>(_ keyPath: KeyPath<R, V>) -> Value {
-            return .field(FieldKeyPath(rootType: R.self, valueType: V.self, keyPath: keyPath))
-        }
+    internal var fluentKeys: [Key] {
+        get { return self[keyPath: Self.fluentKeysKey] }
+        set { self[keyPath: Self.fluentKeysKey] = newValue }
     }
-
-    public enum Data {
-        case array([Data])
-        case encodable(Encodable)
-        case custom(Database.DataType)
+    internal var fluentRange: Range? {
+        get { return self[keyPath: Self.fluentRangeKey] }
+        set { self[keyPath: Self.fluentRangeKey] = newValue }
     }
-
-    /// Table / collection to query.
-    public let entity: String
-
-    /// CURD action to perform on the database.
-    public var action: Action
-
-    /// Aggregates / computed methods.
-    public var aggregates: [Aggregate]
-
-    /// Optional model data to create or update.
-    /// Defaults to an empty dictionary.
-    public var data: Entity
-
-    /// Result set will be limited by these filters.
-    public var filters: [Filter]
-    
-    /// One or more group bys to filter by.
-    public var groups: [GroupBy]
-
-    /// If `true`, the query will only select distinct rows.
-    public var isDistinct: Bool
-
-    /// Limits and offsets the amount of results.
-    public var range: Range?
-
-    /// Sorts to be applied to the results.
-    public var sorts: [Sort]
-
-    /// Joined models.
-    public var joins: [Join]
-
-    /// Allows extensions to store properties.
-    public var extend: Extend
-
-    /// Create a new database query.
-    public init(entity: String) {
-        self.entity = entity
-        self.action = .read
-        self.filters = []
-        self.sorts = []
-        self.groups = []
-        self.aggregates = []
-        self.isDistinct = false
-        self.data = .none
-        self.range = nil
-        self.extend = [:]
-        self.joins = []
+    internal var fluentSorts: [Sort] {
+        get { return self[keyPath: Self.fluentSortsKey] }
+        set { self[keyPath: Self.fluentSortsKey] = newValue }
     }
+}
 
-    // MARK: Builder
-    /// Helper for constructing and executing `DatabaseQuery`s.
-    ///
-    /// Query builder has methods like `all()`, `first()`, and `chunk(max:closure:)` for fetching data. Use the
-    /// `filter(...)` methods combined with operators like `==` and `>=` to filter the result set.
-    ///
-    ///     let users = try User.query(on: req).filter(\.name == "Vapor").all()
-    ///
-    /// Use the `query(on:)` on `Model` to create a `QueryBuilder` for a model.
-    ///
-    /// You can also use the `update(...)` and `delete(...)` methods to perform batch updates and deletes of entities.
-    ///
-    /// Query builder is generic across two types: a model and a result. The `Model` is a Fluent model that references
-    /// the main table / collection this query should take place on. The `Result` is the type that will be returned
-    /// by the Query builder's execution methods. By default, the Model and the Result will be the same. However, decoding
-    /// different types can be useful for situations like joins where the result set structure may be different from the model.
-    ///
-    /// Use methods `decode(...)` and `alsoDecode(...)` to change which result types will be decoded.
-    ///
-    ///     let joined = try User.query(on: req)
-    ///         .join(Pet.self, field: \.userID, to: \.id)
-    ///         .alsoDecode(Pet.self)
-    ///         .all()
-    ///     print(joined) // Future<[(User, Pet)]>
-    ///
-    public final class Builder<Model, Result> where Model: Fluent.Model, Model.Database == Database {
-        // MARK: Properties
+///// A query that can be sent to a Fluent database.
+//public struct Query<Database> where Database: QuerySupporting {
+//    /// Table / collection to query.
+//    public let entity: String
+//
+//    /// CURD action to perform on the database.
+//    public var action: Database.Action
+//
+//    /// Bound data to serialize.
+//    public var binds: [Database.Data]
+//
+//    public var keys: [Database.Key]
+//
+//    public var data: [Database.Field: Database.Data]
+//
+//    /// Result set will be limited by these filters.
+//    public var filters: [Database.Filter]
+//
+//    /// One or more group bys to filter by.
+//    public var groups: [GroupBy]
+//
+//    /// If `true`, the query will only select distinct rows.
+//    public var isDistinct: Bool
+//
+//    /// Limits and offsets the amount of results.
+//    public var range: Range?
+//
+//    public var sorts: [Database.Sort]
+//
+//    /// Allows extensions to store properties.
+//    public var extend: Extend
+//
+//    /// Create a new database query.
+//    public init(entity: String) {
+//        self.entity = entity
+//        self.action = .fluentRead
+//        self.binds = []
+//        self.keys = [.fluentAll]
+//        self.data = [:]
+//        self.filters = []
+//        self.groups = []
+//        self.isDistinct = false
+//        self.range = nil
+//        self.extend = [:]
+//        self.joins = []
+//        self.sorts = []
+//    }
+//}
 
-        /// The `DatabaseQuery` being built.
-        public var query: Query
+/// Helper for constructing and executing `DatabaseQuery`s.
+///
+/// Query builder has methods like `all()`, `first()`, and `chunk(max:closure:)` for fetching data. Use the
+/// `filter(...)` methods combined with operators like `==` and `>=` to filter the result set.
+///
+///     let users = try User.query(on: req).filter(\.name == "Vapor").all()
+///
+/// Use the `query(on:)` on `Model` to create a `QueryBuilder` for a model.
+///
+/// You can also use the `update(...)` and `delete(...)` methods to perform batch updates and deletes of entities.
+///
+/// Query builder is generic across two types: a model and a result. The `Model` is a Fluent model that references
+/// the main table / collection this query should take place on. The `Result` is the type that will be returned
+/// by the Query builder's execution methods. By default, the Model and the Result will be the same. However, decoding
+/// different types can be useful for situations like joins where the result set structure may be different from the model.
+///
+/// Use methods `decode(...)` and `alsoDecode(...)` to change which result types will be decoded.
+///
+///     let joined = try User.query(on: req)
+///         .join(Pet.self, field: \.userID, to: \.id)
+///         .alsoDecode(Pet.self)
+///         .all()
+///     print(joined) // Future<[(User, Pet)]>
+///
+public final class QueryBuilder<Model, Result>
+    where Model: Fluent.Model, Model.Database: QuerySupporting
+{
+    /// The `DatabaseQuery` being built.
+    public var query: Model.Database.Query
 
-        /// The connection this query will be excuted on.
-        /// - warning: Avoid using the connection manually.
-        public let connection: Future<Model.Database.Connection>
+    /// The connection this query will be excuted on.
+    /// - warning: Avoid using the connection manually.
+    public let connection: Future<Model.Database.Connection>
 
-        /// Current result transformation.
-        internal var resultTransformer: (Model.Database.EntityType, Model.Database.Connection) -> Future<Result>
+    /// Current result transformation.
+    internal var resultTransformer: (Model.Database.Output, Model.Database.Connection) -> Future<Result>
 
-        /// Create a new `QueryBuilder`.
-        /// Use `Model.query(on:)` instead.
-        internal init(
-            query: Query,
-            on connection: Future<Model.Database.Connection>,
-            resultTransformer: @escaping (Model.Database.EntityType, Model.Database.Connection) -> Future<Result>
-        ) {
-            self.query = query
-            self.connection = connection
-            self.resultTransformer = resultTransformer
-        }
+    /// If `true`, soft deleted models will be included.
+    internal var shouldIncludeSoftDeleted: Bool
+
+    /// Create a new `QueryBuilder`.
+    /// Use `Model.query(on:)` instead.
+    internal init(
+        query: Model.Database.Query,
+        on connection: Future<Model.Database.Connection>,
+        resultTransformer: @escaping (Model.Database.Output, Model.Database.Connection) -> Future<Result>
+    ) {
+        self.query = query
+        self.connection = connection
+        self.resultTransformer = resultTransformer
+        self.shouldIncludeSoftDeleted = false
     }
 }

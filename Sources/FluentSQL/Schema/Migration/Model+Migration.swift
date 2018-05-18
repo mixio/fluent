@@ -26,29 +26,18 @@ extension Model where Database: SchemaSupporting {
     ///
     /// - parameters:
     ///     - builder: `SchemaCreator` to add the properties to.
-    public static func addProperties(to builder: Schema<Database>.Creator<Self>) throws {
+    public static func addProperties(to builder: SchemaCreator<Self>) throws {
         guard let idProperty = try Self.reflectProperty(forKey: idKey) else {
             throw FluentError(identifier: "idProperty", reason: "Unable to reflect ID property for `\(Self.self)`.", source: .capture())
         }
         let properties = try Self.reflectProperties(depth: 0)
         for property in properties {
-            let type: Any.Type
-            let isOptional: Bool
-            if let o = property.type as? AnyOptionalType.Type {
-                type = o.anyWrappedType
-                isOptional = true
-            } else {
-                type = property.type
-                isOptional = false
-            }
-
-            let field = Schema<Database>.FieldDefinition(
-                field: .reflected(property, entity: entity),
-                dataType: .type(type),
-                isOptional: isOptional,
+            let field = Database.Schema.FieldDefinition.fluentFieldDefinition(
+                .reflected(property, entity: entity),
+                .fluentType(property.type),
                 isIdentifier: property.path == idProperty.path
             )
-            builder.schema.addFields.append(field)
+            builder.schema.fluentCreateFields.append(field)
         }
     }
 }

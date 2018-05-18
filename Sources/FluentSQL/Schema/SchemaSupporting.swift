@@ -6,10 +6,17 @@ import Foundation
 /// Capable of executing a database schema query.
 public protocol SchemaSupporting: QuerySupporting {
     /// Associated schema type for this database.
-    associatedtype SchemaType
+    associatedtype Schema: FluentSQL.Schema
+        where Schema.Field == Query.Field
+
+    /// Enables references errors.
+    static func enableReferences(on conn: Connection) -> Future<Void>
+
+    /// Disables reference errors.
+    static func disableReferences(on conn: Connection) -> Future<Void>
 
     /// Executes the supplied schema on the database connection.
-    static func execute(schema: Schema<Self>, on connection: Connection) -> Future<Void>
+    static func execute(schema: Schema, on connection: Connection) -> Future<Void>
 }
 
 // MARK: Convenience
@@ -20,9 +27,9 @@ extension SchemaSupporting {
     public static func create<Model>(
         _ model: Model.Type,
         on connection: Connection,
-        closure: @escaping (Schema<Self>.Creator<Model>) throws -> ()
-    ) -> Future<Void> {
-        let creator = Schema<Self>.Creator(Model.self)
+        closure: @escaping (SchemaCreator<Model>) throws -> ()
+    ) -> Future<Void> where Model.Database == Self {
+        let creator = SchemaCreator(Model.self)
         return Future.flatMap(on: connection) {
             try closure(creator)
             return self.execute(schema: creator.schema, on: connection)
@@ -34,9 +41,9 @@ extension SchemaSupporting {
     public static func update<Model>(
         _ model: Model.Type,
         on connection: Connection,
-        closure: @escaping (Schema<Self>.Updater<Model>) throws -> ()
-    ) -> Future<Void> {
-        let updater = Schema<Self>.Updater(Model.self)
+        closure: @escaping (SchemaUpdater<Model>) throws -> ()
+    ) -> Future<Void> where Model.Database == Self {
+        let updater = SchemaUpdater(Model.self)
         return Future.flatMap(on: connection) {
             try closure(updater)
             return self.execute(schema: updater.schema, on: connection)
@@ -47,7 +54,8 @@ extension SchemaSupporting {
     public static func delete<Model>(_ model: Model.Type, on connection: Connection) -> Future<Void>
         where Model: Fluent.Model, Model.Database == Self
     {
-        let schema = Schema<Self>(entity: Model.entity, action: .delete)
+        var schema: Model.Database.Schema = .fluentSchema(Model.entity)
+        schema.fluentAction = .fluentDelete
         return execute(schema: schema, on: connection)
     }
 }
