@@ -1,61 +1,65 @@
-import Async
-import Foundation
-
-// MARK: Protocols
-
-/// Capable of executing a database schema query.
-public protocol SchemaSupporting: Database {
-    /// See SchemaFieldType
-    associatedtype FieldType
-
-    /// Default schema field types Fluent must know
-    /// how to make for migrations and tests.
-    static func fieldType(for type: Any.Type) throws -> FieldType
-
+/// SQL database.
+public protocol SchemaSupporting: QuerySupporting {
+    /// Associated schema type.
+    associatedtype Schema
+    
+    /// Associated schema action type.
+    associatedtype SchemaAction
+    
+    /// Associated schema field type.
+    associatedtype SchemaField
+    
+    /// Associated schema field data type.
+    associatedtype SchemaFieldType
+    
+    /// Associated schema constraint type.
+    associatedtype SchemaConstraint
+    
+    /// Associated reference action type.
+    associatedtype SchemaReferenceAction
+    
+    /// Create schema action.
+    static var schemaActionCreate: SchemaAction { get }
+    
+    /// Update schema action.
+    static var schemaActionUpdate: SchemaAction { get }
+    
+    /// Delete schema action.
+    static var schemaActionDelete: SchemaAction { get }
+    
+    /// Creates a schema.
+    static func schemaCreate(_ action: SchemaAction, _ entity: String) -> Schema
+    
+    /// Creates a schema field.
+    static func schemaField(for type: Any.Type, isIdentifier: Bool, _ field: QueryField) -> SchemaField
+    
+    /// Creates a schema field.
+    static func schemaField(_ field: QueryField, _ type: SchemaFieldType) -> SchemaField
+    
+    /// Creates a field on the schema.
+    static func schemaFieldCreate(_ field: SchemaField, to query: inout Schema)
+    
+    /// Deletes a field on the schema.
+    static func schemaFieldDelete(_ field: QueryField, to query: inout Schema)
+    
+    /// Creates a reference constraint.
+    static func schemaReference(from: QueryField, to: QueryField, onUpdate: SchemaReferenceAction?, onDelete: SchemaReferenceAction?) -> SchemaConstraint
+    
+    /// Creates a unique constraint.
+    static func schemaUnique(on: [QueryField]) -> SchemaConstraint
+    
+    /// Creates a constraint on the schema.
+    static func schemaConstraintCreate(_ constraint: SchemaConstraint, to query: inout Schema)
+    
+    /// Deletes a constraint on the schema.
+    static func schemaConstraintDelete(_ constraint: SchemaConstraint, to query: inout Schema)
+    
     /// Executes the supplied schema on the database connection.
-    static func execute(schema: DatabaseSchema<Self>, on connection: Connection) -> Future<Void>
-}
-
-// MARK: Convenience
-
-extension SchemaSupporting {
-    /// Closure for accepting a schema creator.
-    public typealias CreateClosure<Model> = (SchemaCreator<Model>) throws -> ()
-        where Model: Fluent.Model, Model.Database: SchemaSupporting
-
-    /// Convenience for creating a closure that accepts a schema creator
-    /// for the supplied model type on this schema executor.
-    public static func create<Model>(_ model: Model.Type, on connection: Connection, closure: @escaping CreateClosure<Model>) -> Future<Void>
-        where Model.Database == Self
-    {
-        let creator = SchemaCreator(Model.self)
-        return Future.flatMap(on: connection) {
-            try closure(creator)
-            return self.execute(schema: creator.schema, on: connection)
-        }
-    }
-
-    /// Closure for accepting a schema updater.
-    public typealias UpdateClosure<Model> = (SchemaUpdater<Model>) throws -> ()
-        where Model: Fluent.Model, Model.Database: SchemaSupporting
-
-    /// Convenience for creating a closure that accepts a schema updater
-    /// for the supplied model type on this schema executor.
-    public static func update<Model>(_ model: Model.Type, on connection: Connection, closure: @escaping UpdateClosure<Model>) -> Future<Void>
-        where Model.Database == Self
-    {
-        let updater = SchemaUpdater(Model.self)
-        return Future.flatMap(on: connection) {
-            try closure(updater)
-            return self.execute(schema: updater.schema, on: connection)
-        }
-    }
-
-    /// Convenience for deleting the schema for the supplied model type.
-    public static func delete<Model>(_ model: Model.Type, on connection: Connection) -> Future<Void>
-        where Model: Fluent.Model, Model.Database == Self
-    {
-        let schema = DatabaseSchema<Model.Database>(entity: Model.entity, action: .delete)
-        return execute(schema: schema, on: connection)
-    }
+    static func schemaExecute(_ schema: Schema, on conn: Connection) -> Future<Void>
+    
+    /// Enables references errors.
+    static func enableReferences(on conn: Connection) -> Future<Void>
+    
+    /// Disables reference errors.
+    static func disableReferences(on conn: Connection) -> Future<Void>
 }
