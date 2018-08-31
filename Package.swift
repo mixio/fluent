@@ -20,9 +20,9 @@ let package = Package(
 
         // 📦 Dependency injection / inversion of control framework.
         .package(url: "https://github.com/vapor/service.git", from: "1.0.0"),
-        
+
         // *️⃣ Build SQL queries in Swift. Extensible, protocol-based design that supports DQL, DML, and DDL.
-        .package(url: "https://github.com/vapor/sql.git", from: "2.0.0"),
+        .package(url: "https://github.com/mixio/sql.git", branch: "table-aliases-and-resultset-occurrences"),
     ],
     targets: [
         .target(name: "Fluent", dependencies: ["Async", "Console", "Command", "Core", "DatabaseKit", "Logging", "Service"]),

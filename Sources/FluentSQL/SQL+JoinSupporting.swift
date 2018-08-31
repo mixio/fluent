@@ -8,7 +8,7 @@ extension JoinSupporting where
         guard let table = joined.table else {
             fatalError("Cannot join column without a table identifier: \(joined).")
         }
-        return .join(method, table, .binary(.column(base), .equal, .column(joined)))
+        return .join(method, table, .binary(.column(base), .equal, .column(joined)), alias: nil)
     }
 }
 
